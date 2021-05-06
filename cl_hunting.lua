@@ -77,7 +77,7 @@ SpawnAnimal = function(location)
         while not IsPedDeadOrDying(prey) and not destination do
             local preyCoords = GetEntityCoords(prey)
             local distance = #(location - preyCoords)
-            print(distance)
+            print(distance) -- remove this print if you are debugging distance or if its stuck.  Sometimes they will get stuck if the location is impossible to get to.
 
             if distance < 0.35 then
                 ClearPedTasks(prey)
@@ -110,7 +110,7 @@ AddEventHandler('AOD-huntingbait', function()
         ESX.ShowNotification("You are trying to exploit, please do not do this")
         Citizen.Wait(2000)
         ESX.ShowNotification("You were charged one bait for spamming")
-        TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
+        TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait') -- remove this if you don't care to remove bait from people trying to exploit
         return
     end
     if baitexists ~= 0 and GetGameTimer() < (baitexists + 90000) then
