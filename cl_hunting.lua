@@ -141,7 +141,8 @@ AddEventHandler('AOD-huntingknife', function()
             local PlyCoords = GetEntityCoords(PlayerPedId())
             local AnimalHealth = GetEntityHealth(value.id)
             local PlyToAnimal = #(PlyCoords - AnimalCoords)
-            local gun = -1466123874 --if you want a different gun to be used change it here, otherwise the deathcause will always check for gun, or just remove the check
+            local gun = -1466123874 --if you want a different gun to be used change it here, otherwise the deathcause will always check for musket, or just remove the check and set gun ~= d and it'll let you do whatever and remove elseif statement for roadkill
+                    
             local d = GetPedCauseOfDeath(value.id)
             if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
                 busy = true
