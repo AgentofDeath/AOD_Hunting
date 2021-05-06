@@ -1,0 +1,1 @@
+Uses default ESX Notifications if enough people use it maybe I'll add a Notify function or something.  Requires ProgressBars, remove it if you want.  If you use it at least give me credit by not changing the name lol
