@@ -103,18 +103,18 @@ end
 RegisterNetEvent('AOD-huntingbait')
 AddEventHandler('AOD-huntingbait', function()
     if not isValidZone() then
-        ESX.ShowNotification("Your bait would not take here")
+        Notify("Your bait would not take here")
         return
     end
     if busy then
-        ESX.ShowNotification("You are trying to exploit, please do not do this")
+        Notify("You are trying to exploit, please do not do this")
         Citizen.Wait(2000)
-        ESX.ShowNotification("You were charged one bait for spamming")
+        Notify("You were charged one bait for spamming")
         TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait') -- remove this if you don't care to remove bait from people trying to exploit
         return
     end
     if baitexists ~= 0 and GetGameTimer() < (baitexists + 90000) then
-        ESX.ShowNotification("You need to wait longer to place bait")
+        Notify("You need to wait longer to place bait")
         return
     end
     baitexists = nil
@@ -126,7 +126,7 @@ AddEventHandler('AOD-huntingbait', function()
     ClearPedTasks(player)
     baitexists = GetGameTimer()
     local baitLocation = GetEntityCoords(PlayerPedId())
-    ESX.ShowNotification("Bait placed.. now time to wait")
+    Notify("Bait placed.. now time to wait")
     TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
     baitDown(baitLocation)
     busy = false
@@ -156,26 +156,26 @@ AddEventHandler('AOD-huntingknife', function()
                 exports['progressBars']:startUI((5000), "Butchering animal")
                 Citizen.Wait(5000)
                 ClearPedTasks(PlayerPedId())
-                ESX.ShowNotification("Animal butchered")
+                Notify("Animal butchered")
                 DeleteEntity(value.id)
                 TriggerServerEvent('AOD-butcheranimal', value.animal)
                 busy = false
                 table.remove(HuntedAnimalTable, index)
             elseif busy then
-                ESX.ShowNotification("You are attempting to exploit please do not do this")
+                Notify("You are attempting to exploit please do not do this")
             elseif gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
-                ESX.ShowNotification("Looks more like roadkill now")
+                Notify("Looks more like roadkill now")
                 DeleteEntity(value.id)
                 table.remove(HuntedAnimalTable, index)
             elseif PlyToAnimal > 3.0 then
-                ESX.ShowNotification("No Animal nearby")
+                Notify("No Animal nearby")
             elseif AnimalHealth > 0 then
-                ESX.ShowNotification("Animal not dead")
+                Notify("Animal not dead")
             elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
-                ESX.ShowNotification("Not your animal")
+                Notify("Not your animal")
 
             else
-                ESX.ShowNotification("What are you doing?")
+                Notify("What are you doing?")
 
 
 
@@ -196,5 +196,14 @@ function LoadAnimDict(dict)
         RequestAnimDict(dict)
         Citizen.Wait(10)
     end
+end
+
+Notify = function(text, timer)
+	if timer == nil then
+		timer = 5000
+	end
+	-- exports['mythic_notify']:DoCustomHudText('inform', text, timer)
+	-- exports.pNotify:SendNotification({layout = 'centerLeft', text = text, type = 'error', timeout = timer})
+	ESX.ShowNotification(text)
 end
 
