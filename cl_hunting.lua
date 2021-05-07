@@ -77,7 +77,7 @@ SpawnAnimal = function(location)
         while not IsPedDeadOrDying(prey) and not destination do
             local preyCoords = GetEntityCoords(prey)
             local distance = #(location - preyCoords)
-            print(distance) -- remove this print if you are debugging distance or if its stuck.  Sometimes they will get stuck if the location is impossible to get to.
+            print(distance) -- remove this print if you are not debugging distance or if its stuck.  Sometimes they will get stuck if the location is impossible to get to.
 
             if distance < 0.35 then
                 ClearPedTasks(prey)
