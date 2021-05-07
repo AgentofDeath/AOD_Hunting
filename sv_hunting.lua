@@ -22,8 +22,8 @@ AddEventHandler('AOD-butcheranimal', function(animal)
     local cayote = 1682622302
 
     if animal == boar then
-        local amount = math.random(5)
-        xPlayer.addInventoryItem('boarmeat', amount)
+        local bmeat = math.random(5)
+        xPlayer.addInventoryItem('boarmeat', bmeat)
         xPlayer.addInventoryItem('boartusk', 2)
     elseif animal == deer then
         local dmeat = math.random(5)
@@ -35,6 +35,7 @@ AddEventHandler('AOD-butcheranimal', function(animal)
         xPlayer.addInventoryItem('coyotemeat', cmeat)
     else
         print('exploit detected')
+        --you should ban the player if they somehow get to this point lol
     end
 end)
 
