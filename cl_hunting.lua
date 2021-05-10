@@ -15,7 +15,6 @@ DecorRegister("MyAnimal", 2) -- don't touch it
 local validHuntingZones = {'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} -- add or remove hunting zones here
 local HuntedAnimalTable = {} --leave this empty table, empty.
 local busy = false
-local valid = false
 
 
 isValidZone =  function()
