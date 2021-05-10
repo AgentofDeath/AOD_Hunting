@@ -15,7 +15,6 @@ end)
 
 RegisterServerEvent('AOD-butcheranimal')
 AddEventHandler('AOD-butcheranimal', function(animal)
-    local source = source
     local xPlayer = ESX.GetPlayerFromId(source)
     local boar = -832573324
     local deer = -664053099
