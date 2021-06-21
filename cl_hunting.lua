@@ -175,18 +175,9 @@ AddEventHandler('AOD-huntingknife', function()
 
             else
                 Notify("What are you doing?")
-
-
-
-
             end
-
-
         end
-
-
     end)
-
 end)
 
 
