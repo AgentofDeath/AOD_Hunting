@@ -42,7 +42,7 @@ baitDown = function(baitLocation)
     Citizen.CreateThread(function()
         while baitLocation ~= nil do
             local coords = GetEntityCoords(PlayerPedId())
-            if #(baitLocation - coords) > 25 then
+            if #(baitLocation - coords) > Config.DistanceFromBait then
                 if math.random() < 0.10 then
                     SpawnAnimal(baitLocation)
                     baitLocation = nil
@@ -133,7 +133,7 @@ AddEventHandler('AOD-huntingknife', function()
             local PlyCoords = GetEntityCoords(PlayerPedId())
             local AnimalHealth = GetEntityHealth(value.id)
             local PlyToAnimal = #(PlyCoords - AnimalCoords)
-            local gun = -1466123874 --if you want a different gun to be used change it here, otherwise the deathcause will always check for musket, or just remove the check and set gun ~= d and it'll let you do whatever and remove elseif statement for roadkill
+            local gun = Config.HuntingWeapon
                     
             local d = GetPedCauseOfDeath(value.id)
             if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
@@ -159,6 +159,12 @@ AddEventHandler('AOD-huntingknife', function()
                 Notify("Looks more like roadkill now")
                 DeleteEntity(value.id)
                 table.remove(HuntedAnimalTable, index)
+            elseif gun then
+                if gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
+                    Notify(Config.Notifications.animal_destroyed)
+                    DeleteEntity(value.id)
+                    table.remove(HuntedAnimalTable, index)
+                end
             elseif PlyToAnimal > 3.0 then
                 Notify("No Animal nearby")
             elseif AnimalHealth > 0 then
