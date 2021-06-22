@@ -10,18 +10,16 @@ end)
 local baitexists, baitLocation, HuntedAnimalTable, busy = 0, nil, {}, false
 DecorRegister("MyAnimal", 2) -- don't touch it
 
-isValidZone =  function()
+function isValidZone()
     local zoneInH = GetNameOfZone(GetEntityCoords(PlayerPedId()))
-    for k, v in pairs(Config.HuntingZones) do
-        if zoneInH == v then
+    for _, zone in pairs(Config.HuntingZones) do
+        if zoneInH == zone then
             return true
         end
     end
-
 end
 
-
-SetSpawn = function(baitLocation)
+function SetSpawn(baitLocation)
     local playerCoords = GetEntityCoords(PlayerPedId())
     local spawnCoords = nil
     while spawnCoords == nil do
@@ -38,7 +36,7 @@ SetSpawn = function(baitLocation)
     return spawnCoords
 end
 
-baitDown = function(baitLocation)
+function baitDown(baitLocation)
     Citizen.CreateThread(function()
         while baitLocation ~= nil do
             local coords = GetEntityCoords(PlayerPedId())
@@ -54,7 +52,7 @@ baitDown = function(baitLocation)
 end
 
 
-SpawnAnimal = function(location)
+function SpawnAnimal(location)
     local spawn = SetSpawn(location)
     local model = GetHashKey(Config.Animals[math.random(1, #Config.Animals)])
     RequestModel(model)
@@ -69,7 +67,6 @@ SpawnAnimal = function(location)
         while not IsPedDeadOrDying(prey) and not destination do
             local preyCoords = GetEntityCoords(prey)
             local distance = #(location - preyCoords)
-            print(distance) -- remove this print if you are not debugging distance or if its stuck.  Sometimes they will get stuck if the location is impossible to get to.
 
             if distance < 0.35 then
                 ClearPedTasks(prey)
@@ -78,7 +75,6 @@ SpawnAnimal = function(location)
                 Citizen.SetTimeout(8000, function()
                     destination = true
                 end)
-
             end
             if #(preyCoords - GetEntityCoords(PlayerPedId())) < 15.0 then
                 ClearPedTasks(prey)
@@ -92,6 +88,7 @@ SpawnAnimal = function(location)
         end
     end)
 end
+
 RegisterNetEvent('AOD-huntingbait')
 AddEventHandler('AOD-huntingbait', function()
     if not isValidZone() then
@@ -99,10 +96,6 @@ AddEventHandler('AOD-huntingbait', function()
         return
     end
     if busy then
-        Notify("You are trying to exploit, please do not do this")
-        Citizen.Wait(2000)
-        Notify("You were charged one bait for spamming")
-        TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait') -- remove this if you don't care to remove bait from people trying to exploit
         Notify(Config.Notifications.exploit_detected)
         return
     end
@@ -118,11 +111,9 @@ AddEventHandler('AOD-huntingbait', function()
     Citizen.Wait(15000)
     ClearPedTasks(player)
     baitexists = GetGameTimer()
-    local baitLocation = GetEntityCoords(PlayerPedId())
-
     Notify(string.format(Config.Notifications.bait_placed, Config.DistanceFromBait))
     TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
-    baitDown(baitLocation)
+    baitDown(GetEntityCoords(PlayerPedId()))
     busy = false
 end)
 
@@ -150,7 +141,6 @@ AddEventHandler('AOD-huntingknife', function()
                 exports['progressBars']:startUI((5000), "Butchering animal")
                 Citizen.Wait(5000)
                 ClearPedTasks(PlayerPedId())
-                Notify("Animal butchered")
                 DeleteEntity(value.id)
                 TriggerServerEvent('AOD-butcheranimal', value.animal)
                 busy = false
@@ -168,8 +158,6 @@ AddEventHandler('AOD-huntingknife', function()
             elseif AnimalHealth > 0 then
                 Notify(Config.Notifications.animal_not_dead)
             elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
-            else
-                Notify("What are you doing?")
                 Notify(Config.Notifications.animal_invalid)
             end
         end
@@ -184,12 +172,7 @@ function LoadAnimDict(dict)
     end
 end
 
-Notify = function(text, timer)
-	if timer == nil then
-		timer = 5000
-	end
-	-- exports['mythic_notify']:DoCustomHudText('inform', text, timer)
-	-- exports.pNotify:SendNotification({layout = 'centerLeft', text = text, type = 'error', timeout = timer})
+function Notify(text)
 	ESX.ShowNotification(text)
 end
 
