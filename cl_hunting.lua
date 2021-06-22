@@ -134,8 +134,7 @@ AddEventHandler('AOD-huntingknife', function()
             local PlyCoords = GetEntityCoords(PlayerPedId())
             local AnimalHealth = GetEntityHealth(value.id)
             local PlyToAnimal = #(PlyCoords - AnimalCoords)
-            local gun = Config.HuntingWeapon
-                    
+            local gun = Config.HuntingWeapon                    
             local d = GetPedCauseOfDeath(value.id)
             if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
                 busy = true
@@ -182,4 +181,3 @@ end
 function Notify(text)
 	ESX.ShowNotification(text)
 end
-
