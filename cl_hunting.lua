@@ -40,6 +40,9 @@ function baitDown(baitLocation)
     Citizen.CreateThread(function()
         while baitLocation ~= nil do
             local coords = GetEntityCoords(PlayerPedId())
+            if Config.Debug then
+                print('Distance from bait: ' .. #(baitLocation - coords))
+            end
             if #(baitLocation - coords) > Config.DistanceFromBait then
                 if math.random() < 0.10 then
                     SpawnAnimal(baitLocation)
@@ -53,6 +56,9 @@ end
 
 
 function SpawnAnimal(location)
+    if Config.Debug then
+        print('Attempting to spawn an animal...')
+    end
     local spawn = SetSpawn(location)
     local model = GetHashKey(Config.Animals[math.random(1, #Config.Animals)])
     RequestModel(model)
