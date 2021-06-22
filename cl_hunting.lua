@@ -95,7 +95,7 @@ end
 RegisterNetEvent('AOD-huntingbait')
 AddEventHandler('AOD-huntingbait', function()
     if not isValidZone() then
-        Notify("Your bait would not take here")
+        Notify(Config.Notifications.cannot_place_bait)
         return
     end
     if busy then
@@ -103,10 +103,11 @@ AddEventHandler('AOD-huntingbait', function()
         Citizen.Wait(2000)
         Notify("You were charged one bait for spamming")
         TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait') -- remove this if you don't care to remove bait from people trying to exploit
+        Notify(Config.Notifications.exploit_detected)
         return
     end
     if baitexists ~= 0 and GetGameTimer() < (baitexists + 90000) then
-        Notify("You need to wait longer to place bait")
+        Notify(Config.Notifications.wait_to_place_bait)
         return
     end
     baitexists = nil
@@ -118,7 +119,8 @@ AddEventHandler('AOD-huntingbait', function()
     ClearPedTasks(player)
     baitexists = GetGameTimer()
     local baitLocation = GetEntityCoords(PlayerPedId())
-    Notify("Bait placed.. now time to wait")
+
+    Notify(string.format(Config.Notifications.bait_placed, Config.DistanceFromBait))
     TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
     baitDown(baitLocation)
     busy = false
@@ -154,11 +156,7 @@ AddEventHandler('AOD-huntingknife', function()
                 busy = false
                 table.remove(HuntedAnimalTable, index)
             elseif busy then
-                Notify("You are attempting to exploit please do not do this")
-            elseif gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
-                Notify("Looks more like roadkill now")
-                DeleteEntity(value.id)
-                table.remove(HuntedAnimalTable, index)
+                Notify(Config.Notifications.exploit_detected)
             elseif gun then
                 if gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
                     Notify(Config.Notifications.animal_destroyed)
@@ -166,14 +164,13 @@ AddEventHandler('AOD-huntingknife', function()
                     table.remove(HuntedAnimalTable, index)
                 end
             elseif PlyToAnimal > 3.0 then
-                Notify("No Animal nearby")
+                Notify(Config.Notifications.no_animal_nearby)
             elseif AnimalHealth > 0 then
-                Notify("Animal not dead")
+                Notify(Config.Notifications.animal_not_dead)
             elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
-                Notify("Not your animal")
-
             else
                 Notify("What are you doing?")
+                Notify(Config.Notifications.animal_invalid)
             end
         end
     end)
