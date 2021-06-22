@@ -107,7 +107,7 @@ AddEventHandler('AOD-huntingbait', function()
     busy = true
     local player = PlayerPedId()
     TaskStartScenarioInPlace(player, "WORLD_HUMAN_GARDENER_PLANT", 0, true)
-    exports['progressBars']:startUI((15000), "Placing Bait")
+    exports['progressBars']:startUI((15000), Config.Notifications.baiting)
     Citizen.Wait(15000)
     ClearPedTasks(player)
     baitexists = GetGameTimer()
@@ -138,7 +138,7 @@ AddEventHandler('AOD-huntingknife', function()
                 ClearPedTasksImmediately(PlayerPedId())
                 TaskPlayAnim(player, "amb@medic@standing@kneel@base" ,"base" ,8.0, -8.0, -1, 1, 0, false, false, false )
                 TaskPlayAnim(PlayerPedId(), "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, -1, 48, 0, false, false, false )
-                exports['progressBars']:startUI((5000), "Butchering animal")
+                exports['progressBars']:startUI((5000), Config.Notifications.harvesting)
                 Citizen.Wait(5000)
                 ClearPedTasks(PlayerPedId())
                 DeleteEntity(value.id)
@@ -163,7 +163,6 @@ AddEventHandler('AOD-huntingknife', function()
         end
     end)
 end)
-
 
 function LoadAnimDict(dict)
     while (not HasAnimDictLoaded(dict)) do

@@ -18,5 +18,7 @@ Config.Notifications = {
     animal_destroyed = 'This animal looks more like roadkill now, perhaps try a musket?',
     no_animal_nearby = 'You must be near an animal carcass to use this',
     animal_not_dead = 'You cannot use this on a live animal!',
-    animal_invalid = 'You cannot butcher this'
+    animal_invalid = 'You cannot butcher this',
+    baiting = 'Placing bait...',
+    harvesting = 'Harvesting animal...'
 }
