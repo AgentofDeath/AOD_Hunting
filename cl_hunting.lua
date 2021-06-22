@@ -7,36 +7,27 @@ Citizen.CreateThread(function ()
     end
 end)
 
-local HuntAnimals = {"a_c_deer", "a_c_coyote", "a_c_boar"} -- add more animals here if you add animals you need to add them to the server side for obvious reasons
-local spawnDistanceRadius = math.random(50,65) -- change distance to animal spawn to player
-local baitexists = 0 -- don't touch you don't know what you are doing
-local baitLocation = nil -- don't touch because you don't know what you are doing
+local baitexists, baitLocation, HuntedAnimalTable, busy = 0, nil, {}, false
 DecorRegister("MyAnimal", 2) -- don't touch it
-local validHuntingZones = {'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} -- add or remove hunting zones here
-local HuntedAnimalTable = {} --leave this empty table, empty.
-local busy = false
 
-
-isValidZone =  function()
+function isValidZone()
     local zoneInH = GetNameOfZone(GetEntityCoords(PlayerPedId()))
-    for k, v in pairs(validHuntingZones) do
-        if zoneInH == v then
+    for _, zone in pairs(Config.HuntingZones) do
+        if zoneInH == zone then
             return true
         end
     end
-
 end
 
-
-SetSpawn = function(baitLocation)
+function SetSpawn(baitLocation)
     local playerCoords = GetEntityCoords(PlayerPedId())
     local spawnCoords = nil
     while spawnCoords == nil do
-        local spawnX = math.random(-spawnDistanceRadius, spawnDistanceRadius)
-        local spawnY = math.random(-spawnDistanceRadius, spawnDistanceRadius)
+        local spawnX = math.random(-Config.SpawnDistance, Config.SpawnDistance)
+        local spawnY = math.random(-Config.SpawnDistance, Config.SpawnDistance)
         local spawnZ = baitLocation.z
         local vec = vector3(baitLocation.x + spawnX, baitLocation.y + spawnY, spawnZ)
-        if #(playerCoords - vec) > spawnDistanceRadius then
+        if #(playerCoords - vec) > Config.SpawnDistance then
             spawnCoords = vec
         end
     end
@@ -45,14 +36,19 @@ SetSpawn = function(baitLocation)
     return spawnCoords
 end
 
-baitDown = function(baitLocation)
+function baitDown(baitLocation)
     Citizen.CreateThread(function()
         while baitLocation ~= nil do
             local coords = GetEntityCoords(PlayerPedId())
-            if #(baitLocation - coords) > 25 then
-                if math.random() < 0.10 then
-                    SpawnAnimal(baitLocation)
-                    baitLocation = nil
+            if Config.Debug then
+                print('Distance from bait: ' .. #(baitLocation - coords))
+            end
+            if #(baitLocation - coords) > Config.DistanceFromBait then
+                if Config.ChanceToSpawnAnimal < 1.0 then
+                    if math.random() < Config.ChanceToSpawnAnimal then
+                        SpawnAnimal(baitLocation)
+                        baitLocation = nil
+                    end
                 end
             end
             Citizen.Wait(15000)
@@ -61,9 +57,12 @@ baitDown = function(baitLocation)
 end
 
 
-SpawnAnimal = function(location)
+function SpawnAnimal(location)
+    if Config.Debug then
+        print('Attempting to spawn an animal...')
+    end
     local spawn = SetSpawn(location)
-    local model = GetHashKey(HuntAnimals[math.random(1,#HuntAnimals)])
+    local model = GetHashKey(Config.Animals[math.random(1, #Config.Animals)])
     RequestModel(model)
     while not HasModelLoaded(model) do Citizen.Wait(10) end
     local prey = CreatePed(28, model, spawn, true, true, true)
@@ -76,7 +75,6 @@ SpawnAnimal = function(location)
         while not IsPedDeadOrDying(prey) and not destination do
             local preyCoords = GetEntityCoords(prey)
             local distance = #(location - preyCoords)
-            print(distance) -- remove this print if you are not debugging distance or if its stuck.  Sometimes they will get stuck if the location is impossible to get to.
 
             if distance < 0.35 then
                 ClearPedTasks(prey)
@@ -85,7 +83,6 @@ SpawnAnimal = function(location)
                 Citizen.SetTimeout(8000, function()
                     destination = true
                 end)
-
             end
             if #(preyCoords - GetEntityCoords(PlayerPedId())) < 15.0 then
                 ClearPedTasks(prey)
@@ -99,35 +96,32 @@ SpawnAnimal = function(location)
         end
     end)
 end
+
 RegisterNetEvent('AOD-huntingbait')
 AddEventHandler('AOD-huntingbait', function()
     if not isValidZone() then
-        Notify("Your bait would not take here")
+        Notify(Config.Notifications.cannot_place_bait)
         return
     end
     if busy then
-        Notify("You are trying to exploit, please do not do this")
-        Citizen.Wait(2000)
-        Notify("You were charged one bait for spamming")
-        TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait') -- remove this if you don't care to remove bait from people trying to exploit
+        Notify(Config.Notifications.exploit_detected)
         return
     end
     if baitexists ~= 0 and GetGameTimer() < (baitexists + 90000) then
-        Notify("You need to wait longer to place bait")
+        Notify(Config.Notifications.wait_to_place_bait)
         return
     end
     baitexists = nil
     busy = true
     local player = PlayerPedId()
     TaskStartScenarioInPlace(player, "WORLD_HUMAN_GARDENER_PLANT", 0, true)
-    exports['progressBars']:startUI((15000), "Placing Bait")
+    exports['progressBars']:startUI((15000), Config.Notifications.baiting)
     Citizen.Wait(15000)
     ClearPedTasks(player)
     baitexists = GetGameTimer()
-    local baitLocation = GetEntityCoords(PlayerPedId())
-    Notify("Bait placed.. now time to wait")
+    Notify(string.format(Config.Notifications.bait_placed, Config.DistanceFromBait))
     TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
-    baitDown(baitLocation)
+    baitDown(GetEntityCoords(PlayerPedId()))
     busy = false
 end)
 
@@ -140,7 +134,7 @@ AddEventHandler('AOD-huntingknife', function()
             local PlyCoords = GetEntityCoords(PlayerPedId())
             local AnimalHealth = GetEntityHealth(value.id)
             local PlyToAnimal = #(PlyCoords - AnimalCoords)
-            local gun = -1466123874 --if you want a different gun to be used change it here, otherwise the deathcause will always check for musket, or just remove the check and set gun ~= d and it'll let you do whatever and remove elseif statement for roadkill
+            local gun = Config.HuntingWeapon
                     
             local d = GetPedCauseOfDeath(value.id)
             if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
@@ -152,34 +146,31 @@ AddEventHandler('AOD-huntingknife', function()
                 ClearPedTasksImmediately(PlayerPedId())
                 TaskPlayAnim(player, "amb@medic@standing@kneel@base" ,"base" ,8.0, -8.0, -1, 1, 0, false, false, false )
                 TaskPlayAnim(PlayerPedId(), "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, -1, 48, 0, false, false, false )
-                exports['progressBars']:startUI((5000), "Butchering animal")
+                exports['progressBars']:startUI((5000), Config.Notifications.harvesting)
                 Citizen.Wait(5000)
                 ClearPedTasks(PlayerPedId())
-                Notify("Animal butchered")
                 DeleteEntity(value.id)
                 TriggerServerEvent('AOD-butcheranimal', value.animal)
                 busy = false
                 table.remove(HuntedAnimalTable, index)
             elseif busy then
-                Notify("You are attempting to exploit please do not do this")
-            elseif gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
-                Notify("Looks more like roadkill now")
-                DeleteEntity(value.id)
-                table.remove(HuntedAnimalTable, index)
+                Notify(Config.Notifications.exploit_detected)
+            elseif gun then
+                if gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
+                    Notify(Config.Notifications.animal_destroyed)
+                    DeleteEntity(value.id)
+                    table.remove(HuntedAnimalTable, index)
+                end
             elseif PlyToAnimal > 3.0 then
-                Notify("No Animal nearby")
+                Notify(Config.Notifications.no_animal_nearby)
             elseif AnimalHealth > 0 then
-                Notify("Animal not dead")
+                Notify(Config.Notifications.animal_not_dead)
             elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
-                Notify("Not your animal")
-
-            else
-                Notify("What are you doing?")
+                Notify(Config.Notifications.animal_invalid)
             end
         end
     end)
 end)
-
 
 function LoadAnimDict(dict)
     while (not HasAnimDictLoaded(dict)) do
@@ -188,12 +179,7 @@ function LoadAnimDict(dict)
     end
 end
 
-Notify = function(text, timer)
-	if timer == nil then
-		timer = 5000
-	end
-	-- exports['mythic_notify']:DoCustomHudText('inform', text, timer)
-	-- exports.pNotify:SendNotification({layout = 'centerLeft', text = text, type = 'error', timeout = timer})
+function Notify(text)
 	ESX.ShowNotification(text)
 end
 
