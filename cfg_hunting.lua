@@ -6,9 +6,11 @@ Config.Animals = {"a_c_deer", "a_c_coyote", "a_c_boar"} -- add more animals here
 
 Config.SpawnDistance = math.random(50, 65) -- distance animals spawn from the bait
 
-Config.DistanceFromBait = 25 -- distance you need to get from the bait for an animal to spawn
+Config.DistanceFromBait = 25 -- distance you need to get from the bait for an animal to spawn (default 25)
 
-Config.HuntingZones = {'AIRP', 'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} -- add or remove hunting zones here
+Config.ChanceToSpawnAnimal = 0.10 -- percentage chance to spawn animal every 15 seconds (default 10%) set to 1.0 for 100% chance
+
+Config.HuntingZones = {'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} -- add or remove hunting zones here
 
 Config.HuntingWeapon = `WEAPON_MUSKET` -- Set to nil to disable weapon requirement
 

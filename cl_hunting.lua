@@ -44,9 +44,11 @@ function baitDown(baitLocation)
                 print('Distance from bait: ' .. #(baitLocation - coords))
             end
             if #(baitLocation - coords) > Config.DistanceFromBait then
-                if math.random() < 0.10 then
-                    SpawnAnimal(baitLocation)
-                    baitLocation = nil
+                if Config.ChanceToSpawnAnimal < 1.0 then
+                    if math.random() < Config.ChanceToSpawnAnimal then
+                        SpawnAnimal(baitLocation)
+                        baitLocation = nil
+                    end
                 end
             end
             Citizen.Wait(15000)
