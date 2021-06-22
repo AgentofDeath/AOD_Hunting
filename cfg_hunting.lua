@@ -26,3 +26,27 @@ Config.Notifications = {
     baiting = 'Placing bait...',
     harvesting = 'Harvesting animal...'
 }
+
+Config.RewardMeatMinimum = 1
+Config.RewardMeatMaximum = 3
+
+Config.RewardOtherMinimum = 0
+Config.RewardOtherMaximum = 3
+
+Config.Rewards = {
+    a_c_deer = {
+        hash = -664053099,
+        rewardMeat = 'deermeat',
+        rewardOther = 'deerskin'
+    },
+    a_c_coyote = {
+        hash = 1682622302,
+        rewardMeat = 'coyotemeat',
+        rewardOther = 'coyotefur'
+    },
+    a_c_boar = {
+        hash = -832573324,
+        rewardMeat = 'boarmeat',
+        rewardOther = 'boartusk'
+    }
+}
