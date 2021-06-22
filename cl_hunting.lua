@@ -7,19 +7,12 @@ Citizen.CreateThread(function ()
     end
 end)
 
-local HuntAnimals = {"a_c_deer", "a_c_coyote", "a_c_boar"} -- add more animals here if you add animals you need to add them to the server side for obvious reasons
-local spawnDistanceRadius = math.random(50,65) -- change distance to animal spawn to player
-local baitexists = 0 -- don't touch you don't know what you are doing
-local baitLocation = nil -- don't touch because you don't know what you are doing
+local baitexists, baitLocation, HuntedAnimalTable, busy = 0, nil, {}, false
 DecorRegister("MyAnimal", 2) -- don't touch it
-local validHuntingZones = {'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} -- add or remove hunting zones here
-local HuntedAnimalTable = {} --leave this empty table, empty.
-local busy = false
-
 
 isValidZone =  function()
     local zoneInH = GetNameOfZone(GetEntityCoords(PlayerPedId()))
-    for k, v in pairs(validHuntingZones) do
+    for k, v in pairs(Config.HuntingZones) do
         if zoneInH == v then
             return true
         end
@@ -32,11 +25,11 @@ SetSpawn = function(baitLocation)
     local playerCoords = GetEntityCoords(PlayerPedId())
     local spawnCoords = nil
     while spawnCoords == nil do
-        local spawnX = math.random(-spawnDistanceRadius, spawnDistanceRadius)
-        local spawnY = math.random(-spawnDistanceRadius, spawnDistanceRadius)
+        local spawnX = math.random(-Config.SpawnDistance, Config.SpawnDistance)
+        local spawnY = math.random(-Config.SpawnDistance, Config.SpawnDistance)
         local spawnZ = baitLocation.z
         local vec = vector3(baitLocation.x + spawnX, baitLocation.y + spawnY, spawnZ)
-        if #(playerCoords - vec) > spawnDistanceRadius then
+        if #(playerCoords - vec) > Config.SpawnDistance then
             spawnCoords = vec
         end
     end
@@ -63,7 +56,7 @@ end
 
 SpawnAnimal = function(location)
     local spawn = SetSpawn(location)
-    local model = GetHashKey(HuntAnimals[math.random(1,#HuntAnimals)])
+    local model = GetHashKey(Config.Animals[math.random(1, #Config.Animals)])
     RequestModel(model)
     while not HasModelLoaded(model) do Citizen.Wait(10) end
     local prey = CreatePed(28, model, spawn, true, true, true)
