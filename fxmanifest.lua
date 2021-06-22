@@ -9,5 +9,3 @@ client_script 'cl_hunting.lua'
 server_script 'sv_hunting.lua'
 
 shared_script 'cfg_hunting.lua'
-
-dependency 'progressBars' -- https://forum.cfx.re/t/release-progress-bars-1-0-standalone/526287
