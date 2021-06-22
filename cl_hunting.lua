@@ -137,7 +137,7 @@ AddEventHandler('AOD-huntingknife', function()
             local gun = Config.HuntingWeapon
                     
             local d = GetPedCauseOfDeath(value.id)
-            if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
+            if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and (gun == d or gun == nil) and not busy then
                 busy = true
                 LoadAnimDict('amb@medic@standing@kneel@base')
                 LoadAnimDict('anim@gangops@facility@servers@bodysearch@')
