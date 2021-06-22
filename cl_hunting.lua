@@ -39,16 +39,18 @@ end
 function baitDown(baitLocation)
     Citizen.CreateThread(function()
         while baitLocation ~= nil do
+            local chance = math.random()
             local coords = GetEntityCoords(PlayerPedId())
             if Config.Debug then
+                print(string.format('Chance: %s/%s', chance, Config.ChanceToSpawnAnimal))
                 print('Distance from bait: ' .. #(baitLocation - coords))
             end
             if #(baitLocation - coords) > Config.DistanceFromBait then
-                if Config.ChanceToSpawnAnimal < 1.0 then
+                if chance <= Config.ChanceToSpawnAnimal then
                     if math.random() < Config.ChanceToSpawnAnimal then
                         SpawnAnimal(baitLocation)
                         baitLocation = nil
-                    end
+                    end   
                 end
             end
             Citizen.Wait(15000)
