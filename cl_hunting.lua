@@ -116,7 +116,9 @@ AddEventHandler('AOD-huntingbait', function()
     baitexists = nil
     busy = true
     local player = PlayerPedId()
-    TaskStartScenarioInPlace(player, "WORLD_HUMAN_GARDENER_PLANT", -1, true)
+    LoadAnimDict('amb@world_human_gardener_plant@male@base')
+    TaskPlayAnim(player, "amb@world_human_gardener_plant@male@base" ,"base" , 8.0, -8.0, 15000, 1, 0, false, false, false )
+    --TaskStartScenarioInPlace(player, "WORLD_HUMAN_GARDENER_PLANT", -1, true)
     if Config.EnableProgressBars then
         exports['progressBars']:startUI((15000), Config.Notifications.baiting)
     else
@@ -133,53 +135,52 @@ end)
 
 RegisterNetEvent('AOD-huntingknife')
 AddEventHandler('AOD-huntingknife', function()
-    Citizen.CreateThread(function()
-        Citizen.Wait(1000)
-        for index, value in ipairs(HuntedAnimalTable) do
-            local AnimalCoords = GetEntityCoords(value.id)
-            local PlyCoords = GetEntityCoords(PlayerPedId())
-            local AnimalHealth = GetEntityHealth(value.id)
-            local PlyToAnimal = #(PlyCoords - AnimalCoords)
-            local gun = Config.HuntingWeapon
-                    
-            local d = GetPedCauseOfDeath(value.id)
-            if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and (gun == d or gun == nil) and not busy then
-                busy = true
-                LoadAnimDict('amb@medic@standing@kneel@base')
-                LoadAnimDict('anim@gangops@facility@servers@bodysearch@')
-                TaskTurnPedToFaceEntity(PlayerPedId(), value.id, -1)
-                Citizen.Wait(1500)
-                ClearPedTasksImmediately(PlayerPedId())
-                TaskPlayAnim(player, "amb@medic@standing@kneel@base" ,"base" ,8.0, -8.0, -1, 1, 0, false, false, false )
-                TaskPlayAnim(PlayerPedId(), "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, -1, 48, 0, false, false, false )
-                if Config.EnableProgressBars then
-                    exports['progressBars']:startUI((5000), Config.Notifications.harvesting)
-                else
-                    Notify(Config.Notifications.harvesting)
-                end
-                Citizen.Wait(5000)
-                ClearPedTasks(PlayerPedId())
-                DeleteEntity(value.id)
-                TriggerServerEvent('AOD-butcheranimal', value.animal)
-                busy = false
-                table.remove(HuntedAnimalTable, index)
-            elseif busy then
-                Notify(Config.Notifications.exploit_detected)
-            elseif gun then
-                if gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
-                    Notify(Config.Notifications.animal_destroyed)
-                    DeleteEntity(value.id)
-                    table.remove(HuntedAnimalTable, index)
-                end
-            elseif PlyToAnimal > 3.0 then
-                Notify(Config.Notifications.no_animal_nearby)
-            elseif AnimalHealth > 0 then
-                Notify(Config.Notifications.animal_not_dead)
-            elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
-                Notify(Config.Notifications.animal_invalid)
+    for index, value in ipairs(HuntedAnimalTable) do
+        local ped = PlayerPedId()
+        local AnimalCoords = GetEntityCoords(value.id)
+        local PlyCoords = GetEntityCoords(ped)
+        local AnimalHealth = GetEntityHealth(value.id)
+        local PlyToAnimal = #(PlyCoords - AnimalCoords)
+        local gun = Config.HuntingWeapon
+                
+        local d = GetPedCauseOfDeath(value.id)
+        if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and (gun == d or gun == nil) and not busy then
+            busy = true
+            LoadAnimDict('amb@medic@standing@kneel@base')
+            LoadAnimDict('anim@gangops@facility@servers@bodysearch@')
+            TaskTurnPedToFaceEntity(ped, value.id, -1)
+            Citizen.Wait(500)
+            ClearPedTasksImmediately(ped)
+            TaskPlayAnim(ped, "amb@medic@standing@kneel@base" ,"base", 8.0, -8.0, -1, 1, 0, false, false, false)
+            Citizen.Wait(500)
+            TaskPlayAnim(ped, "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, 5000, 48, 0, false, false, false )
+            if Config.EnableProgressBars then
+                exports['progressBars']:startUI((5000), Config.Notifications.harvesting)
+            else
+                Notify(Config.Notifications.harvesting)
             end
+            Citizen.Wait(5000)
+            ClearPedTasks(ped)
+            DeleteEntity(value.id)
+            TriggerServerEvent('AOD-butcheranimal', value.animal)
+            busy = false
+            table.remove(HuntedAnimalTable, index)
+        elseif busy then
+            Notify(Config.Notifications.exploit_detected)
+        elseif gun then
+            if gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
+                Notify(Config.Notifications.animal_destroyed)
+                DeleteEntity(value.id)
+                table.remove(HuntedAnimalTable, index)
+            end
+        elseif PlyToAnimal > 3.0 then
+            Notify(Config.Notifications.no_animal_nearby)
+        elseif AnimalHealth > 0 then
+            Notify(Config.Notifications.animal_not_dead)
+        elseif not DoesEntityExist(value.id) and PlyToAnimal < 2.0 then
+            Notify(Config.Notifications.animal_invalid)
         end
-    end)
+    end
 end)
 
 function LoadAnimDict(dict)
