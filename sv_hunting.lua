@@ -11,15 +11,23 @@ ESX.RegisterUsableItem('huntingbait', function(source)
 end)
 
 RegisterServerEvent('AOD-butcheranimal')
-AddEventHandler('AOD-butcheranimal', function(animal)
+AddEventHandler('AOD-butcheranimal', function(animal, hit)
     local xPlayer = ESX.GetPlayerFromId(source)
     local found = false
+    local multiplier = 1
     
+    if hit == 31086 then 
+        multiplier = Config.HeadshotBonus 
+        if Config.Debug then
+            print('Headshot Detected')
+        end
+    end
+
     for _, aData in pairs(Config.Rewards) do
         if animal == aData.hash then
             found = true
-            xPlayer.addInventoryItem(aData.rewardMeat, math.random(Config.RewardMeatMinimum, Config.RewardMeatMaximum))
-            xPlayer.addInventoryItem(aData.rewardOther, math.random(Config.RewardOtherMinimum, Config.RewardOtherMaximum))
+            xPlayer.addInventoryItem(aData.rewardMeat, math.random(Config.RewardMeatMinimum, Config.RewardMeatMaximum) * multiplier)
+            xPlayer.addInventoryItem(aData.rewardOther, math.random(Config.RewardOtherMinimum, Config.RewardOtherMaximum) * multiplier)
         end
     end
 

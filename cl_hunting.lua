@@ -141,6 +141,7 @@ AddEventHandler('AOD-huntingknife', function()
         local PlyCoords = GetEntityCoords(ped)
         local AnimalHealth = GetEntityHealth(value.id)
         local PlyToAnimal = #(PlyCoords - AnimalCoords)
+        local _, lastDamagedBone = GetPedLastDamageBone(value.id)
         local gun = Config.HuntingWeapon
                 
         local d = GetPedCauseOfDeath(value.id)
@@ -162,7 +163,7 @@ AddEventHandler('AOD-huntingknife', function()
             Citizen.Wait(5000)
             ClearPedTasks(ped)
             DeleteEntity(value.id)
-            TriggerServerEvent('AOD-butcheranimal', value.animal)
+            TriggerServerEvent('AOD-butcheranimal', value.animal, lastDamagedBone)
             busy = false
             table.remove(HuntedAnimalTable, index)
         elseif busy then

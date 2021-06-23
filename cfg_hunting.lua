@@ -29,6 +29,8 @@ Config.Notifications = {
     harvesting = 'Harvesting animal...'
 }
 
+Config.HeadshotBonus = 2 -- this is a multiplier (default 2)
+
 Config.RewardMeatMinimum = 1
 Config.RewardMeatMaximum = 3
 
