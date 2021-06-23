@@ -155,7 +155,25 @@ AddEventHandler('AOD-huntingknife', function()
             TaskPlayAnim(ped, "amb@medic@standing@kneel@base" ,"base", 8.0, -8.0, -1, 1, 0, false, false, false)
             Citizen.Wait(500)
             TaskPlayAnim(ped, "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, 5000, 48, 0, false, false, false )
-            if Config.EnableProgressBars then
+        Citizen.CreateThread(function()
+        Citizen.Wait(1000)
+        for index, value in ipairs(HuntedAnimalTable) do
+            local AnimalCoords = GetEntityCoords(value.id)
+            local PlyCoords = GetEntityCoords(PlayerPedId())
+            local AnimalHealth = GetEntityHealth(value.id)
+            local PlyToAnimal = #(PlyCoords - AnimalCoords)
+            local gun = Config.HuntingWeapon                    
+            local d = GetPedCauseOfDeath(value.id)
+            if DoesEntityExist(value.id) and AnimalHealth <= 0 and PlyToAnimal < 2.0 and gun == d and not busy then
+                busy = true
+                LoadAnimDict('amb@medic@standing@kneel@base')
+                LoadAnimDict('anim@gangops@facility@servers@bodysearch@')
+                TaskTurnPedToFaceEntity(PlayerPedId(), value.id, -1)
+                Citizen.Wait(1500)
+                ClearPedTasksImmediately(PlayerPedId())
+                TaskPlayAnim(player, "amb@medic@standing@kneel@base" ,"base" ,8.0, -8.0, -1, 1, 0, false, false, false )
+                TaskPlayAnim(PlayerPedId(), "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, -1, 48, 0, false, false, false )
+              if Config.EnableProgressBars then
                 exports['progressBars']:startUI((5000), Config.Notifications.harvesting)
             else
                 Notify(Config.Notifications.harvesting)
@@ -194,4 +212,3 @@ end
 function Notify(text)
 	ESX.ShowNotification(text)
 end
-
