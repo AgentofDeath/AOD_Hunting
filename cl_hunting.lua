@@ -1,4 +1,4 @@
-ESX = nil --
+ESX = nil
 
 Citizen.CreateThread(function ()
     while ESX == nil do
@@ -156,8 +156,8 @@ AddEventHandler('AOD-huntingknife', function()
             Citizen.Wait(500)
             TaskPlayAnim(ped, "anim@gangops@facility@servers@bodysearch@" ,"player_search" ,8.0, -8.0, 5000, 48, 0, false, false, false )
         Citizen.CreateThread(function()
-        Citizen.Wait(1000)
-        for index, value in ipairs(HuntedAnimalTable) do
+            Citizen.Wait(1000)
+            for index, value in ipairs(HuntedAnimalTable) do
             local AnimalCoords = GetEntityCoords(value.id)
             local PlyCoords = GetEntityCoords(PlayerPedId())
             local AnimalHealth = GetEntityHealth(value.id)
