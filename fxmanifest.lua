@@ -7,5 +7,3 @@ version '1.1.0'
 client_script 'cl_hunting.lua'
 
 server_script 'sv_hunting.lua'
-
-shared_script 'cfg_hunting.lua'
