@@ -1,4 +1,4 @@
-ESX = nil
+ESX = nil --
 
 Citizen.CreateThread(function ()
     while ESX == nil do
