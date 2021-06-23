@@ -16,8 +16,8 @@ AddEventHandler('AOD-butcheranimal', function(animal)
     local found = false
     
     for _, aData in pairs(Config.Rewards) do
-        local found = true
         if animal == aData.hash then
+            found = true
             xPlayer.addInventoryItem(aData.rewardMeat, math.random(Config.RewardMeatMinimum, Config.RewardMeatMaximum))
             xPlayer.addInventoryItem(aData.rewardOther, math.random(Config.RewardOtherMinimum, Config.RewardOtherMaximum))
         end
