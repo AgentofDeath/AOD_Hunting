@@ -2,6 +2,8 @@ Config = {}
 
 Config.Debug = false
 
+Config.EnableProgressBars = false -- https://forum.cfx.re/t/release-progress-bars-1-0-standalone/526287
+
 Config.Animals = {"a_c_deer", "a_c_coyote", "a_c_boar"} -- add more animals here if you add animals you need to add them to the server side for obvious reasons
 
 Config.SpawnDistance = math.random(50, 65) -- distance animals spawn from the bait
@@ -25,4 +27,30 @@ Config.Notifications = {
     animal_invalid = 'You cannot butcher this',
     baiting = 'Placing bait...',
     harvesting = 'Harvesting animal...'
+}
+
+Config.HeadshotBonus = 2 -- this is a multiplier (default 2)
+
+Config.RewardMeatMinimum = 1
+Config.RewardMeatMaximum = 3
+
+Config.RewardOtherMinimum = 0
+Config.RewardOtherMaximum = 3
+
+Config.Rewards = {
+    a_c_deer = {
+        hash = -664053099,
+        rewardMeat = 'deermeat',
+        rewardOther = 'deerskin'
+    },
+    a_c_coyote = {
+        hash = 1682622302,
+        rewardMeat = 'coyotemeat',
+        rewardOther = 'coyotefur'
+    },
+    a_c_boar = {
+        hash = -832573324,
+        rewardMeat = 'boarmeat',
+        rewardOther = 'boartusk'
+    }
 }
