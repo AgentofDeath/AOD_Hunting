@@ -7,6 +7,7 @@ AOD.SpawnChance = 0.10 -- 10 percent chance use values .01 - 1.0
 AOD.DistanceFromBait = 25.0 -- distance from player to spawn bait
 AOD.DistanceTooCloseToAnimal = 15.0
 AOD.HuntingWeapon = `WEAPON_MUSKET` --set to nil for no requirement
+AOD.HuntAnyWhere = false
 
 --Rewards for butchering animals
 AOD.BoarMeat = math.random(5) -- amount of meat to receive from Boars
