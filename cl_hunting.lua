@@ -13,7 +13,7 @@ DecorRegister('MyAnimal', 2) -- don't touch it
 isValidZone =  function()
     local zoneInH = GetNameOfZone(GetEntityCoords(PlayerPedId()))
     for k, v in pairs(AOD.HuntingZones) do
-        if zoneInH == v then
+        if zoneInH == v or AOD.HuntAnyWhere == true then
             return true
         end
     end
