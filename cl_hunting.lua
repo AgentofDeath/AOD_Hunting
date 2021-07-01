@@ -59,9 +59,19 @@ SpawnAnimal = function(location)
     while not HasModelLoaded(model) do Citizen.Wait(10) end
     local prey = CreatePed(28, model, spawn, true, true, true)
     DecorSetBool(prey, 'MyAnimal', true)
-    TaskGoStraightToCoord(prey, location, 1.0, -1, 0.0, 0.0)
+    TaskGoToCoordAnyMeans(prey, location, 1.0, 0, 0, 786603, 1.0)
     table.insert(HuntedAnimalTable, {id = prey, animal = model})
     SetModelAsNoLongerNeeded(model)
+    if AOD.UseBlip then
+        local blip = AddBlipForEntity(prey)
+			SetBlipDisplay(blip, 2)
+			SetBlipScale  (blip, 0.85)
+			SetBlipColour (blip, 2)
+			SetBlipAsShortRange(blip, false)
+			BeginTextCommandSetBlipName("STRING")
+			AddTextComponentString(AOD.BlipText)
+			EndTextCommandSetBlipName(blip)
+    end
     Citizen.CreateThread(function()
         local destination = false
         while not IsPedDeadOrDying(prey) and not destination do
@@ -118,6 +128,7 @@ AddEventHandler('AOD-huntingbait', function()
     Notify(AOD.Strings.BaitPlaced)
     TriggerServerEvent('AOD-hunt:TakeItem', 'huntingbait')
     baitDown(baitLocation)
+    SpawnBaitItem(baitLocation)
     busy = false
 end)
 
@@ -150,12 +161,14 @@ AddEventHandler('AOD-huntingknife', function()
                 TriggerServerEvent('AOD-butcheranimal', value.animal)
                 busy = false
                 table.remove(HuntedAnimalTable, index)
+                DeleteBaitItem()
             elseif busy then
                 Notify(AOD.Strings.ExploitDetected)
             elseif gun ~= d and AnimalHealth <= 0 and PlyToAnimal < 2.0 then
                 Notify(AOD.Strings.Roadkill)
                 DeleteEntity(value.id)
                 table.remove(HuntedAnimalTable, index)
+                DeleteBaitItem()
             elseif PlyToAnimal > 3.0 then
                 Notify(AOD.Strings.NoAnimal)
             elseif AnimalHealth > 0 then
@@ -169,6 +182,28 @@ AddEventHandler('AOD-huntingknife', function()
     end)
 end)
 
+SpawnBaitItem = function(result)
+    local model = `prop_drug_package_02`
+            RequestModel(model)
+            while not HasModelLoaded(model) do Citizen.Wait(10) end
+            local bait = CreateObject(model, result.x , result.y , result.z- 1.0, true, true, true)
+            SetModelAsNoLongerNeeded(model)
+            FreezeEntityPosition(bait, true)
+end
+
+DeleteBaitItem = function()
+    local player = PlayerPedId()
+    local location = GetEntityCoords(player)
+    local bait = GetClosestObjectOfType(location, 5.0, `prop_drug_package_02`, false, false, false)
+    local baitloc = GetEntityCoords(bait)
+        if DoesEntityExist(bait) and #(location - baitloc) < 3 then
+            DeleteEntity(bait)
+        else
+            print('no bait object found nearby?')
+        end
+    end
+
+
 LoadAnimDict = function(dict)
     while (not HasAnimDictLoaded(dict)) do
         RequestAnimDict(dict)
@@ -180,7 +215,7 @@ Notify = function(text, timer)
     if timer == nil then
         timer = 5000
     end
-    --exports['mythic_notify']:DoCustomHudText('inform', text, timer)
+    --exports['mythic_notify']:DoCustomHudText('vrm', text, timer)
     -- exports.pNotify:SendNotification({layout = 'centerLeft', text = text, type = 'error', timeout = timer})
     ESX.ShowNotification(text)
 end
