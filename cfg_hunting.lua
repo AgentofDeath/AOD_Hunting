@@ -3,11 +3,13 @@ AOD = {}
 AOD.HuntAnimals = {'a_c_deer', 'a_c_coyote', 'a_c_boar'}
 AOD.SpawnDistanceRadius = math.random(50,65) --disance animal spawns from bait
 AOD.HuntingZones = {'CMSW' , 'SANCHIA', 'MTGORDO', 'MTJOSE', 'PALHIGH'} --add valid zones here
-AOD.SpawnChance = 0.10 -- 10 percent chance use values .01 - 1.0
+AOD.SpawnChance = 1.0 -- 10 percent chance use values .01 - 1.0
 AOD.DistanceFromBait = 25.0 -- distance from player to spawn bait
 AOD.DistanceTooCloseToAnimal = 15.0
 AOD.HuntingWeapon = `WEAPON_MUSKET` --set to nil for no requirement
 AOD.HuntAnyWhere = false
+AOD.UseBlip = false -- set to true for the animal to have a blip on the map
+AOD.BlipText = 'Prey'
 
 --Rewards for butchering animals
 AOD.BoarMeat = math.random(5) -- amount of meat to receive from Boars
