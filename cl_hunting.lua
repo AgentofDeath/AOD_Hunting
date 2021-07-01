@@ -59,7 +59,7 @@ SpawnAnimal = function(location)
     while not HasModelLoaded(model) do Citizen.Wait(10) end
     local prey = CreatePed(28, model, spawn, true, true, true)
     DecorSetBool(prey, 'MyAnimal', true)
-    TaskGoToCoordAnyMeans(prey, location, 1.0, 0, 0, 786603, 1.0)
+    TaskGoToCoordAnyMeans(prey, location, 1.0, 0, 0, 786603, 1.0) --added fix for animal getting stuck sometimes
     table.insert(HuntedAnimalTable, {id = prey, animal = model})
     SetModelAsNoLongerNeeded(model)
     if AOD.UseBlip then
